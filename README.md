@@ -256,20 +256,22 @@ Details: [KV cache strategy →](https://pccxai.github.io/pccx/en/docs/v002/Arch
 
 ---
 
-## Roadmap — Two-Track
+## Roadmap — Integration and IP-core lines
 
-This repository hosts the RTL for **both** active tracks. As of
-2026-04-20:
+This repository remains the KV260 + PCCX v002 LLM application
+integration repo. Reusable v002 IP-core ownership moves to `pccx-v002`;
+future v003 IP-core ownership will be separate in `pccx-v003`.
 
-| Track | Target model | Planned target | Horizon | Shared RTL assets |
-|-------|-------------|------|---------|-------------------|
-| **v002 Extended** (this repo, `main`) | Gemma 3N E4B | **20 tok/s** target, evidence-gated | Week 1–49 | sparse weight fetcher (Phase G), EAGLE draft/verify dispatch (Phase H+), SSD scheduler (Phase I), tree mask generator (Phase J) |
-| **v003** (future branch) | Gemma 4 E4B | **12–15 tok/s** target | Week 16–52 (parallel) | reuses v002 Phase G/H/I/J modules with hidden/layer/KV-head re-parameterization |
+| Track | Owner | Target model | Scope | Status |
+|-------|-------|--------------|-------|--------|
+| **v002 integration** | this repo + `pccx-v002` | Gemma 3N E4B | KV260 board flow, bare-metal driver, application wiring, and v002 LLM package consumption | In progress |
+| **v003 IP-core** | `pccx-v003` | Gemma 4 E4B | Separate IP-core line and compatibility contract | Future / TBD |
 
-- v002 freeze → snapshotted into `pccx/codes/v002/` via the pccx
-  version-cutover workflow (`tools/freeze_active.sh`).
-- v003 lives on a later branch of this same repo; the pccx docs site
-  will fork its own `v003/` docs tree at the same time.
+- This repository keeps its in-tree RTL copy during the transition.
+- A later phase will wire `pccx-v002` in as the consumed IP-core source,
+  then remove duplicate in-tree copies once the integration boundary is
+  verified.
+- v003 RTL belongs to the separate IP-core repository line.
 
 Full phase-by-phase plan, decision points, compute budget, and Year 2
 **Auto-Porting Pipeline α** vision:
