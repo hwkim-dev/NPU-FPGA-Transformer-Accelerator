@@ -20,6 +20,8 @@ Pages, bilingual EN / KO).
   [COMPILE_ORDER_POLICY.md](COMPILE_ORDER_POLICY.md)
 - Repo-local Vivado timing evidence checklist:
   [TIMING_EVIDENCE.md](TIMING_EVIDENCE.md)
+- Repo-local Vivado log retention policy:
+  [VIVADO_LOG_POLICY.md](VIVADO_LOG_POLICY.md)
 - Repo-local release evidence checklist:
   [RELEASE_EVIDENCE_CHECKLIST.md](RELEASE_EVIDENCE_CHECKLIST.md)
 - M01 v002 correctness & bring-up close criteria:
