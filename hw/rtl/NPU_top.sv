@@ -86,6 +86,9 @@ module NPU_top (
 
   logic                fifo_full_wire;
 
+  // ===| Status backflow signals (defined later as mmio_npu_stat) |=============
+  logic [31:0] mmio_npu_stat;
+
   // ===| [1] NPU Controller |====================================================
   npu_controller_top #() u_npu_controller_top (
       .clk    (clk_core),
@@ -93,6 +96,12 @@ module NPU_top (
       .i_clear(i_clear),
 
       .S_AXIL_CTRL(S_AXIL_CTRL),
+
+      // Continuous status push so the host AXIL_STAT_OUT FIFO stays non-empty
+      // (AXIL_STAT_OUT asserts s_arready only when the FIFO holds data). The
+      // FIFO is 8 deep and self-throttles on overflow.
+      .IN_enc_stat ({32'b0, mmio_npu_stat}),
+      .IN_enc_valid(1'b1),
 
       .OUT_GEMV_op_x64_valid  (GEMV_op_x64_valid_wire),
       .OUT_GEMM_op_x64_valid  (GEMM_op_x64_valid_wire),
@@ -395,10 +404,10 @@ module NPU_top (
   );
 
   // ===| Status |================================================================
-  // Aggregated NPU busy/done flags — intended for ctrl_npu_frontend IN_enc_stat.
+  // Aggregated NPU busy/done flags routed to ctrl_npu_frontend IN_enc_stat via
+  // the npu_controller_top instance above.
   // Bit 0 : BUSY  (memory FIFO full | CVO engine active | CVO DMA bridge active)
   // Bit 1 : DONE  (CVO operation complete pulse)
-  logic [31:0] mmio_npu_stat;
   assign mmio_npu_stat[0]    = fifo_full_wire | cvo_busy_wire | cvo_disp_busy_wire;
   assign mmio_npu_stat[1]    = cvo_done_wire;
   assign mmio_npu_stat[31:2] = 30'd0;

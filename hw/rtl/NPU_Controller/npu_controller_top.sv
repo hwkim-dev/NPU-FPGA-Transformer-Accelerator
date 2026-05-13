@@ -30,6 +30,13 @@ module npu_controller_top #() (
     // ===| AXI4-Lite Slave : PS <-> NPU control plane |=========================
     axil_if.slave S_AXIL_CTRL,
 
+    // ===| Status Backflow : NPU -> CPU (read path) |===========================
+    // Routed up from NPU_top's mmio_npu_stat aggregator. Continuous IN_valid
+    // keeps the AXIL_STAT_OUT FIFO non-empty so the AXI4-Lite read handshake
+    // can complete from the host side (s_arready = ~rvalid_r && ~fifo_empty).
+    input logic [`ISA_WIDTH-1:0] IN_enc_stat,
+    input logic                  IN_enc_valid,
+
     // ===| Decoded Instruction Valids |=========================================
     output logic OUT_GEMV_op_x64_valid,
     output logic OUT_GEMM_op_x64_valid,
@@ -57,8 +64,8 @@ module npu_controller_top #() (
       .OUT_RAW_instruction(raw_instruction),
       .OUT_kick           (raw_instruction_pop_valid),
 
-      .IN_enc_stat ('0),
-      .IN_enc_valid(1'b0),
+      .IN_enc_stat (IN_enc_stat),
+      .IN_enc_valid(IN_enc_valid),
 
       .IN_fetch_ready(fetch_PC_ready)
   );
