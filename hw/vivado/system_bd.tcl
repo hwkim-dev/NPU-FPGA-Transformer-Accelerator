@@ -77,9 +77,12 @@ proc pccx_latest_vlnv {pattern} {
 }
 
 proc pccx_config_datamover_mm2s {cell_name} {
+    # Note: c_include_s2mm only accepts Full|Basic in Vivado 2025.2; use Basic
+    # to disable the unused S2MM channel functionally (Omit was rejected).
+    # c_mm2s_stscmd_is_async is read-only at customize time and is dropped.
     set_property -dict [list \
         CONFIG.c_include_mm2s {Full} \
-        CONFIG.c_include_s2mm {Omit} \
+        CONFIG.c_include_s2mm {Basic} \
         CONFIG.c_single_interface {0} \
         CONFIG.c_addr_width {32} \
         CONFIG.c_m_axi_mm2s_data_width {128} \
@@ -88,15 +91,17 @@ proc pccx_config_datamover_mm2s {cell_name} {
         CONFIG.c_mm2s_btt_used {23} \
         CONFIG.c_include_mm2s_dre {false} \
         CONFIG.c_include_mm2s_stsfifo {true} \
-        CONFIG.c_mm2s_stscmd_is_async {false} \
         CONFIG.c_mm2s_stscmd_fifo_depth {8} \
         CONFIG.c_enable_cache_user {false} \
     ] [get_bd_cells $cell_name]
 }
 
 proc pccx_config_datamover_s2mm {cell_name} {
+    # Note: c_include_mm2s only accepts Full|Basic in Vivado 2025.2; use Basic
+    # to disable the unused MM2S channel functionally (Omit was rejected).
+    # c_s2mm_stscmd_is_async is read-only at customize time and is dropped.
     set_property -dict [list \
-        CONFIG.c_include_mm2s {Omit} \
+        CONFIG.c_include_mm2s {Basic} \
         CONFIG.c_include_s2mm {Full} \
         CONFIG.c_single_interface {0} \
         CONFIG.c_addr_width {32} \
@@ -106,7 +111,6 @@ proc pccx_config_datamover_s2mm {cell_name} {
         CONFIG.c_s2mm_btt_used {23} \
         CONFIG.c_include_s2mm_dre {false} \
         CONFIG.c_include_s2mm_stsfifo {true} \
-        CONFIG.c_s2mm_stscmd_is_async {false} \
         CONFIG.c_s2mm_stscmd_fifo_depth {8} \
         CONFIG.c_s2mm_support_indet_btt {false} \
         CONFIG.c_enable_cache_user {false} \
